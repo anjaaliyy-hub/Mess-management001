@@ -1,5 +1,7 @@
 🍽️ MessMate – College Mess Management Website
 
+🌐Demo link:https://messmena.netlify.app
+
 A simple and user-friendly College Mess Management System developed to make everyday mess activities easier to manage. MessMate brings food menus, student attendance, food polls, expenses, payments, and student suggestions together in one website.
 
 ✨ Features
