@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MessMate – College Mess Management Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Font & Phosphor Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+  <!-- AUTHENTICATION OVERLAY / MODAL -->
+  <div id="auth-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header-branding">
+        <div class="brand-badge"><i class="ph-bold ph-fork-knife"></i></div>
+        <h2>MessMate Portal</h2>
+        <p>Institutional Dining & Mess Administration System</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-id">Login ID</label>
+          <div class="input-with-icon">
+            <i class="ph ph-user"></i>
+            <input type="text" id="login-id" placeholder="Enter admin or student" required autocomplete="username" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="login-pass">Password</label>
+          <div class="input-with-icon">
+            <i class="ph ph-lock-key"></i>
+            <input type="password" id="login-pass" placeholder="••••••••" required autocomplete="current-password" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+          <span>Authenticate Session</span>
+          <i class="ph-bold ph-arrow-right"></i>
+        </button>
+
+        <div class="demo-pills-label">Quick Demo Access:</div>
+        <div class="demo-pills">
+          <button type="button" class="pill-chip" onclick="fillCredentials('admin', 'admin123')">
+            <i class="ph ph-shield-check"></i> Fill Admin
+          </button>
+          <button type="button" class="pill-chip" onclick="fillCredentials('student', 'student123')">
+            <i class="ph ph-student"></i> Fill Student
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- APPLICATION WRAPPER -->
+  <div id="app" class="app-layout">
+    
+    <!-- SIDE NAVIGATION -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon"><i class="ph-bold ph-fork-knife"></i></div>
+        <div class="brand-text">
+          <h1>MessMate</h1>
+          <span>Campus Dining ERP</span>
+        </div>
+      </div>
+
+      <div class="user-session-card">
+        <div class="avatar-ring" id="user-avatar">AD</div>
+        <div class="session-meta">
+          <strong id="user-display-name">Administrator</strong>
+          <span class="role-badge" id="user-role-badge">Admin</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <a href="#dashboard" class="nav-item active" data-tab="dashboard">
+          <i class="ph-duotone ph-squares-four"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#menu" class="nav-item" data-tab="menu">
+          <i class="ph-duotone ph-calendar-blank"></i>
+          <span>Food Menu</span>
+        </a>
+        <a href="#attendance" class="nav-item" data-tab="attendance">
+          <i class="ph-duotone ph-check-square-offset"></i>
+          <span>Attendance</span>
+        </a>
+        <a href="#polls" class="nav-item" data-tab="polls">
+          <i class="ph-duotone ph-chart-bar-horizontal"></i>
+          <span>Food Polls</span>
+        </a>
+        <a href="#leave" class="nav-item" data-tab="leave">
+          <i class="ph-duotone ph-calendar-x"></i>
+          <span>Leave & Rebate</span>
+        </a>
+        <a href="#suggestions" class="nav-item" data-tab="suggestions">
+          <i class="ph-duotone ph-chats-circle"></i>
+          <span>Suggestions</span>
+        </a>
+        <a href="#finance" class="nav-item" data-tab="finance">
+          <i class="ph-duotone ph-receipt"></i>
+          <span>Finance & Dues</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="logout-btn" class="btn btn-logout">
+          <i class="ph ph-sign-out"></i>
+          <span>End Session</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN VIEWPORT -->
+    <main class="main-content">
+      
+      <!-- TOP STATUS BAR -->
+      <header class="topbar">
+        <div class="topbar-title">
+          <h2 id="page-title">Operational Overview</h2>
+          <span id="current-date-display">Live Session</span>
+        </div>
+        <div class="topbar-actions">
+          <div class="live-clock" id="live-clock">--:--:--</div>
+          <button class="btn btn-outline" id="role-toggle-btn" title="Simulate switching logins">
+            <i class="ph ph-arrows-clockwise"></i> Switch to <span id="toggle-target-role">Student</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- TAB 1: DASHBOARD -->
+      <section id="tab-dashboard" class="tab-pane active">
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-icon blue"><i class="ph-duotone ph-users-three"></i></div>
+            <div class="metric-data">
+              <span class="metric-label">Today's Headcount</span>
+              <h3 id="stat-attendance">342 / 410</h3>
+              <p class="metric-subtext text-positive"><i class="ph-bold ph-trend-up"></i> 83.4% Served</p>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon emerald"><i class="ph-duotone ph-wallet"></i></div>
+            <div class="metric-data">
+              <span class="metric-label">Mess Fee Status</span>
+              <h3 id="stat-fees">₹0 Outstanding</h3>
+              <p class="metric-subtext">Current billing cycle</p>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon amber"><i class="ph-duotone ph-fire"></i></div>
+            <div class="metric-data">
+              <span class="metric-label">Top Poll Contender</span>
+              <h3 id="stat-top-poll">Paneer Butter Masala</h3>
+              <p class="metric-subtext">68% votes for tomorrow</p>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon purple"><i class="ph-duotone ph-clock-countdown"></i></div>
+            <div class="metric-data">
+              <span class="metric-label">Active Leaves Today</span>
+              <h3 id="stat-active-leaves">28 Students</h3>
+              <p class="metric-subtext">Rebate auto-deducted</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="two-column-layout">
+          <!-- Meal Schedule -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <i class="ph-bold ph-cooking-pot"></i> Today's Meal Plan
+              </div>
+              <span class="chip chip-info" id="today-day-tag">Active Schedule</span>
+            </div>
+            <div class="meal-timeline" id="today-timeline">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Quick Actions & Notices -->
+          <div class="dashboard-side-stack">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><i class="ph-bold ph-lightning"></i> Quick Actions</div>
+              </div>
+              <div class="action-buttons-grid">
+                <button class="action-tile" onclick="switchTab('attendance')">
+                  <i class="ph-duotone ph-barcode"></i>
+                  <span>Mark Check-in</span>
+                </button>
+                <button class="action-tile" onclick="switchTab('polls')">
+                  <i class="ph-duotone ph-thumbs-up"></i>
+                  <span>Cast Tomorrow's Vote</span>
+                </button>
+                <button class="action-tile" onclick="switchTab('leave')">
+                  <i class="ph-duotone ph-note-pencil"></i>
+                  <span>File Leave Request</span>
+                </button>
+                <button class="action-tile" onclick="switchTab('suggestions')">
+                  <i class="ph-duotone ph-paper-plane-tilt"></i>
+                  <span>Submit Suggestion</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="card announcement-card">
+              <div class="card-header">
+                <div class="card-title"><i class="ph-bold ph-megaphone-simple"></i> Notice Board</div>
+                <span class="chip chip-warning">Urgent</span>
+              </div>
+              <p>Special Sunday Feast billing is included in the base cycle. Rebate applications for next weekend must be submitted 24 hours prior.</p>
+              <div class="announcement-meta">Posted by Chief Mess Warden • Today</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: MENU -->
+      <section id="tab-menu" class="tab-pane">
+        <div class="toolbar">
+          <div class="day-picker" id="menu-day-picker">
+            <button class="day-chip active" data-day="Monday">Mon</button>
+            <button class="day-chip" data-day="Tuesday">Tue</button>
+            <button class="day-chip" data-day="Wednesday">Wed</button>
+            <button class="day-chip" data-day="Thursday">Thu</button>
+            <button class="day-chip" data-day="Friday">Fri</button>
+            <button class="day-chip" data-day="Saturday">Sat</button>
+            <button class="day-chip" data-day="Sunday">Sun</button>
+          </div>
+          <button class="btn btn-primary admin-only" onclick="openMenuEditModal()">
+            <i class="ph-bold ph-plus-circle"></i> Edit Selected Menu
+          </button>
+        </div>
+
+        <div class="menu-slots-grid" id="menu-slots-container">
+          <!-- Rendered via JS -->
+        </div>
+      </section>
+
+      <!-- TAB 3: ATTENDANCE -->
+      <section id="tab-attendance" class="tab-pane">
+        <div class="attendance-banner">
+          <div class="attendance-prompt">
+            <h3>Daily Dining Verification</h3>
+            <p>Students must log meal consumption for food waste reduction and inventory management.</p>
+          </div>
+          <button id="btn-mark-attendance" class="btn btn-primary btn-large student-only">
+            <i class="ph-bold ph-fingerprint"></i> Mark My Check-In Now
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="ph-bold ph-list-checks"></i> Attendance Registry</div>
+            <button class="btn btn-outline btn-sm admin-only" onclick="exportAttendanceCSV()">
+              <i class="ph ph-download-simple"></i> Export CSV
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Student Name</th>
+                  <th>Roll / ID</th>
+                  <th>Session</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="attendance-table-body">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: POLLS -->
+      <section id="tab-polls" class="tab-pane">
+        <div class="card mb-4">
+          <div class="card-header">
+            <div class="card-title"><i class="ph-bold ph-chart-polar"></i> Tomorrow's Dinner Special Poll</div>
+            <span class="chip chip-info">Closes at 07:00 PM</span>
+          </div>
+          <div class="poll-container" id="poll-options-wrapper">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: LEAVE REQUESTS -->
+      <section id="tab-leave" class="tab-pane">
+        <div class="two-column-layout">
+          <!-- Leave Form -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="ph-bold ph-calendar-plus"></i> Submit Leave for Mess Rebate</div>
+            </div>
+            <form id="leave-request-form">
+              <div class="form-group">
+                <label for="leave-from">From Date</label>
+                <input type="date" id="leave-from" required />
+              </div>
+              <div class="form-group">
+                <label for="leave-to">To Date</label>
+                <input type="date" id="leave-to" required />
+              </div>
+              <div class="form-group">
+                <label for="leave-reason">Reason for Absence</label>
+                <textarea id="leave-reason" rows="3" placeholder="Home visit, academic symposium, medical leave..." required></textarea>
+              </div>
+              <div class="notice-box">
+                <i class="ph-bold ph-info"></i>
+                <span>Mess rebate is credited at flat rate of <strong>₹120/day</strong> for leaves of 2 or more days.</span>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">
+                <span>Submit Leave Application</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Leave Log -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="ph-bold ph-clock-counter-clockwise"></i> Application History</div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Applicant</th>
+                    <th>Dates</th>
+                    <th>Days</th>
+                    <th>Status</th>
+                    <th class="admin-only">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="leave-table-body">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: SUGGESTIONS -->
+      <section id="tab-suggestions" class="tab-pane">
+        <div class="two-column-layout">
+          <!-- Submit Box -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="ph-bold ph-chat-text"></i> Submit Mess Feedback</div>
+            </div>
+            <form id="suggestion-form">
+              <div class="form-group">
+                <label for="sugg-category">Feedback Category</label>
+                <select id="sugg-category">
+                  <option value="Food Quality">Food Quality & Taste</option>
+                  <option value="Hygiene">Cleanliness & Hygiene</option>
+                  <option value="Menu Request">New Recipe Suggestion</option>
+                  <option value="Timings">Serving Time & Punctuality</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="sugg-text">Feedback / Note</label>
+                <textarea id="sugg-text" rows="4" placeholder="Detail your experience or suggestion constructively..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Post Suggestion</button>
+            </form>
+          </div>
+
+          <!-- Feed -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="ph-bold ph-chats"></i> Campus Feedback Feed</div>
+            </div>
+            <div class="suggestion-feed" id="suggestion-feed-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 7: FINANCE -->
+      <section id="tab-finance" class="tab-pane">
+        <div class="two-column-layout">
+          <!-- Student Invoice -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><i class="ph-bold ph-receipt"></i> Monthly Fee Breakdown</div>
+              <span class="chip chip-positive">Cycle: Current Month</span>
+            </div>
+            <div class="fee-statement">
+              <div class="fee-row">
+                <span>Base Mess Bill (Fixed)</span>
+                <strong>₹3,600.00</strong>
+              </div>
+              <div class="fee-row">
+                <span>Special Sunday Dinners</span>
+                <strong>₹450.00</strong>
+              </div>
+              <div class="fee-row rebate-row">
+                <span>Approved Leave Rebate</span>
+                <strong id="finance-rebate-amt">- ₹0.00</strong>
+              </div>
+              <hr class="divider" />
+              <div class="fee-row total-row">
+                <span>Total Amount Due</span>
+                <span class="fee-highlight" id="finance-net-due">₹4,050.00</span>
+              </div>
+              <button class="btn btn-primary btn-block student-only mt-4" onclick="simulatePay()">
+                <i class="ph-bold ph-credit-card"></i> Pay Bill Online
+              </button>
+            </div>
+          </div>
+
+          <!-- Admin Expense Logger -->
+          <div class="card admin-only">
+            <div class="card-header">
+              <div class="card-title"><i class="ph-bold ph-coins"></i> Log Procurement Expense</div>
+            </div>
+            <form id="expense-form">
+              <div class="form-group">
+                <label for="exp-item">Description / Item</label>
+                <input type="text" id="exp-item" placeholder="E.g., 50kg Basmati Rice, LPG Refill" required />
+              </div>
+              <div class="form-row">
+                <div class="form-group col-6">
+                  <label for="exp-category">Category</label>
+                  <select id="exp-category">
+                    <option value="Groceries">Raw Groceries</option>
+                    <option value="Dairy">Dairy & Milk</option>
+                    <option value="Vegetables">Produce & Vegetables</option>
+                    <option value="Fuel/LPG">Fuel & LPG Gas</option>
+                    <option value="Maintenance">Kitchen Utensils</option>
+                  </select>
+                </div>
+                <div class="form-group col-6">
+                  <label for="exp-amount">Amount (₹)</label>
+                  <input type="number" id="exp-amount" placeholder="4500" required />
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Record Expense</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Ledger -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <div class="card-title"><i class="ph-bold ph-book-open"></i> Institutional Procurement Ledger</div>
+            <button class="btn btn-outline btn-sm admin-only" onclick="exportExpenseCSV()">
+              <i class="ph ph-download-simple"></i> Export Ledger
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th>Amount</th>
+                  <th>Audited By</th>
+                </tr>
+              </thead>
+              <tbody id="expense-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
